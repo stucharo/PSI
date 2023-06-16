@@ -55,7 +55,24 @@ def W_sub(D,ID,rho_steel,rho_conc,rho_coat,rho_sw,t_coat,t_conc,rho_cont):
     B = A(D + 2*t_coat + 2*t_conc,0) * rho_sw * g
     return (W_cont + W_steel +  W_conc + W_coat - B) / 1000
 
-def A(OD,ID=0):
+def A(OD, ID=0):
+    """
+    Calculate area of a circle.
+
+    Returns the area of a ring or solid circle of ID = 0.
+
+    Parameters
+    ----------
+    OD : float
+        The outer diameter of the circle (m)
+    ID : float, optional
+        The inner diameter of a ring (m)
+    
+    Returns
+    -------
+    area : float
+        The area of the circle or ring (m^2)
+    """
     return np.pi * (OD**2 - ID**2) / 4
 
 def Abm(D,z):
