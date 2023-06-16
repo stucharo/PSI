@@ -4,6 +4,7 @@ Created on Mon May  8 14:06:57 2023
 
 @author: Laston
 """
+import pathlib
 
 import numpy as np
 import pandas as pd
@@ -11,9 +12,9 @@ import time
 from scipy.stats import truncnorm
 import matplotlib.pyplot as plt
 
-start_time = time.time()
+input_file = pathlib.Path(__file__).parent.resolve() / 'INPUT_FILE.csv'
 
-idf = pd.read_excel('INPUT_FILE.xlsx',header = 2)
+idf = pd.read_csv(input_file)
 idf['D_std'] = idf['D_Coeff_of_Var'] * idf['D_mean']
 idf['WT_std'] = idf['WT_Coeff_of_Var'] * idf['WT_mean']
 g = 9.81
@@ -54,8 +55,8 @@ def W_sub(D,ID,rho_steel,rho_conc,rho_coat,rho_sw,t_coat,t_conc,rho_cont):
     B = A(D + 2*t_coat + 2*t_conc,0) * rho_sw * g
     return (W_cont + W_steel +  W_conc + W_coat - B) / 1000
 
-def A(D,ID):
-    return np.pi * (D**2 - ID**2) / 4
+def A(OD,ID=0):
+    return np.pi * (OD**2 - ID**2) / 4
 
 def Abm(D,z):
     for i in range(len(z)):
@@ -355,12 +356,14 @@ def mc(idf):
     return df
 
 if __name__ == "__main__":
-   odf = mc(idf)
+    
+    start_time = time.time()
+    odf = mc(idf)
 
-pd.set_option('display.max_columns', None)
-print(odf.describe(percentiles = [.025,.05,.5,.95,.975]))
+    pd.set_option('display.max_columns', None)
+    print(odf.describe(percentiles = [.025,.05,.5,.95,.975]))
 
-end_time = time.time()
+    end_time = time.time()
 
-elapsed_time = (end_time - start_time) / 60
-print(f"Elapsed time: {elapsed_time} minutes")
+    elapsed_time = (end_time - start_time) / 60
+    print(f"Elapsed time: {elapsed_time} minutes")
