@@ -55,8 +55,8 @@ def W_sub(D,ID,rho_steel,rho_conc,rho_coat,rho_sw,t_coat,t_conc,rho_cont):
     B = A(D + 2*t_coat + 2*t_conc,0) * rho_sw * g
     return (W_cont + W_steel +  W_conc + W_coat - B) / 1000
 
-def A(D,ID):
-    return np.pi * (D**2 - ID**2) / 4
+def A(OD,ID=0):
+    return np.pi * (OD**2 - ID**2) / 4
 
 def Abm(D,z):
     for i in range(len(z)):

@@ -10,3 +10,12 @@ def test_A():
     expected = pi * (OD**2 - ID**2) / 4
 
     assert actual == expected
+
+def test_A_no_ID():
+    OD = 1
+
+    actual = psi.A(OD)
+    expected = pi * OD**2 / 4
+
+    assert actual == expected
+
