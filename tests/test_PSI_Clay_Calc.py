@@ -2,6 +2,7 @@ from math import pi
 
 import src.PSI_Clay_Calc as psi
 
+
 def test_A():
     OD = 1
     ID = 0.5
@@ -11,6 +12,7 @@ def test_A():
 
     assert actual == expected
 
+
 def test_A_no_ID():
     OD = 1
 
@@ -18,4 +20,3 @@ def test_A_no_ID():
     expected = pi * OD**2 / 4
 
     assert actual == expected
-
