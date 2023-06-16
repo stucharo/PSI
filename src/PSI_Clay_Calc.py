@@ -89,7 +89,27 @@ def Abm(D, z):
 
 
 def B(D, z):
-    return 2 * (((z * D) - (z**2)) ** 0.5)
+    """
+    Calculate the pipe-soil contact width.
+    
+    Calculates the pipe-soil contact width as a functions of z using Eq. 4.3 in DNV-RP-F104 (2021)
+
+    Parameters
+    ----------
+    D : float
+        Overall diameter of pipe (m)
+    z : float
+        Penetration (m)
+    
+    Returns
+    -------
+    B : float
+        Pipe-soil contact width (m)
+    """
+    if z < D / 2:
+        return 2 * (((z * D) - (z**2)) ** 0.5)
+    else:
+        return D
 
 
 def k_lay(gamma, D, z, S_ur, T_0):
@@ -459,15 +479,6 @@ def mc(idf):
 
     return df
 
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> ce4312d (Refactors plotting into "create_fig" function)
-=======
-
->>>>>>> ce4312d1a04bbcd06a8693e22db9efd112d93b18
 if __name__ == "__main__":
 
     start_time = time.time()
