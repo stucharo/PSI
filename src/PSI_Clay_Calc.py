@@ -66,7 +66,6 @@ def A(OD, ID=0):
     Parameters
     ----------
     OD : float
-        The outer diameter of the circle (m)
     ID : float, optional
         The inner diameter of a ring (m)
 
@@ -206,6 +205,13 @@ def lat_br(z, D, Q_v, S_u, gamma, W_case):
 
 def lat_res(z, D, W_case):
     return (0.32 + (0.8 * (z / D) ** 0.8)) / W_case
+
+
+def create_fig(data, title, bins=100):
+    plt.hist(data, bins=bins)
+    plt.title(f"{title}")
+    plt.savefig(f"{title}.png")
+    plt.clf()
 
 
 def mc(idf):
@@ -424,116 +430,44 @@ def mc(idf):
     df = df[df["compare"] == True]
     df = df.drop(["compare", "W_steel", "W_steel_min", "W_steel_max"], axis=1)
 
-    bins = 100
+    plots = {
+        "Wall Thickness": df["WT"],
+        "Bottom Tension": df["T_0"],
+        "Gamma": df["gamma"],
+        "S_ur": df["S_ur"],
+        "S_u": df["S_u"],
+        "Pipe Diameter": df["D"],
+        "Embedment(install)": df["z_inst"],
+        "Axial Breakout(install)": df["axbr_inst"],
+        "Axial Breakout(install)": df["axbr_inst"],
+        "Axial Residual(install)": df["axres_inst"],
+        "Lateral Breakout(install)": df["latbr_inst"],
+        "Lateral Residual(install)": df["latres_inst"],
+        "Embedment(hydro)": df["z_hydro"],
+        "Axial Breakout(hydro)": df["axbr_hydro"],
+        "Axial Residual(hydro)": df["axres_hydro"],
+        "Lateral Breakout(hydro)": df["latbr_hydro"],
+        "Lateral Residual(hydro)": df["latres_hydro"],
+        "Embedment(op)": df["z_op"],
+        "Axial Breakout(op)": df["axbr_op"],
+        "Axial Residual(op)": df["axres_op"],
+        "Lateral Breakout(op)": df["latbr_op"],
+        "Lateral Residual(op)": df["latres_op"],
+    }
 
-    plt.hist(df["WT"], bins=bins)
-    plt.title("Wall Thickness")
-    plt.savefig("Wall Thickness.png")
-    plt.clf()
-
-    plt.hist(df["T_0"], bins=bins)
-    plt.title("Bottom Tension")
-    plt.savefig("Bottom Tension.png")
-    plt.clf()
-
-    plt.hist(df["gamma"], bins=bins)
-    plt.title("Gamma")
-    plt.savefig("Gamma.png")
-    plt.clf()
-
-    plt.hist(df["S_ur"], bins=bins)
-    plt.title("S_ur")
-    plt.savefig("S_ur.png")
-    plt.clf()
-
-    plt.hist(df["S_u"], bins=bins)
-    plt.title("S_u")
-    plt.savefig("S_u.png")
-    plt.clf()
-
-    plt.hist(df["D"], bins=bins)
-    plt.title("Pipe Diameter")
-    plt.savefig("Pipe Diameter.png")
-    plt.clf()
-
-    plt.hist(df["z_inst"], bins=bins)
-    plt.title("Embedment(install)")
-    plt.savefig("Embedment(install).png")
-    plt.clf()
-
-    plt.hist(df["axbr_inst"], bins=bins)
-    plt.title("Axial Breakout(install)")
-    plt.savefig("Axial Breakout(install).png")
-    plt.clf()
-
-    plt.hist(df["axres_inst"], bins=bins)
-    plt.title("Axial Residual(install)")
-    plt.savefig("Axial Residual(install).png")
-    plt.clf()
-
-    plt.hist(df["latbr_inst"], bins=bins)
-    plt.title("Lateral Breakout(install)")
-    plt.savefig("Lateral Breakout(install).png")
-    plt.clf()
-
-    plt.hist(df["latres_inst"], bins=bins)
-    plt.title("Lateral Residual(install)")
-    plt.savefig("Lateral Residual(install).png")
-    plt.clf()
-
-    plt.hist(df["z_hydro"], bins=bins)
-    plt.title("Embedment(hydro)")
-    plt.savefig("Embedment(hydro).png")
-    plt.clf()
-
-    plt.hist(df["axbr_hydro"], bins=bins)
-    plt.title("Axial Breakout(hydro)")
-    plt.savefig("Axial Breakout(hydro).png")
-    plt.clf()
-
-    plt.hist(df["axres_hydro"], bins=bins)
-    plt.title("Axial Residual(hydro)")
-    plt.savefig("Axial Residual(hydro).png")
-    plt.clf()
-
-    plt.hist(df["latbr_hydro"], bins=bins)
-    plt.title("Lateral Breakout(hydro)")
-    plt.savefig("Lateral Breakout(hydro).png")
-    plt.clf()
-
-    plt.hist(df["latres_hydro"], bins=bins)
-    plt.title("Lateral Residual(hydro)")
-    plt.savefig("Lateral Residual(hydro).png")
-    plt.clf()
-
-    plt.hist(df["z_op"], bins=bins)
-    plt.title("Embedment(op)")
-    plt.savefig("Embedment(op).png")
-    plt.clf()
-
-    plt.hist(df["axbr_op"], bins=bins)
-    plt.title("Axial Breakout(op)")
-    plt.savefig("Axial Breakout(op).png")
-    plt.clf()
-
-    plt.hist(df["axres_op"], bins=bins)
-    plt.title("Axial Residual(op)")
-    plt.savefig("Axial Residual(op).png")
-    plt.clf()
-
-    plt.hist(df["latbr_op"], bins=bins)
-    plt.title("Lateral Breakout(op)")
-    plt.savefig("Lateral Breakout(op).png")
-    plt.clf()
-
-    plt.hist(df["latres_op"], bins=bins)
-    plt.title("Lateral Residual(op)")
-    plt.savefig("Lateral Residual(op).png")
-    plt.clf()
+    [create_fig(title, data) for title, data in plots.items()]
 
     return df
 
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> ce4312d (Refactors plotting into "create_fig" function)
+=======
+
+>>>>>>> ce4312d1a04bbcd06a8693e22db9efd112d93b18
 if __name__ == "__main__":
 
     start_time = time.time()
