@@ -1,0 +1,2 @@
+n,D_mean,D_Coeff_of_Var,WT_mean,WT_Coeff_of_Var,gamma_mean,gamma_std,S_u_mean,S_u_std,S_u_std_grad,S_u_grad,S_ur_mean,S_ur_std_grad,S_ur_std,S_ur_grad,csr_mean,csr_std,ocr_mean,ocr_std,rifa_mean,rifa_std,T_0_mean,T_0_std,EI,t_coat,t_conc,rho_cont,rho_steel,rho_coat,rho_conc,rho_sw,rho_cont_hydro,rho_cont_mean,rho_cont_std,E_res,g_rate,alpha
+1000000,0.508,0.00375,0.0286,0.0625,3.92E+00,5.30E-01,2.20E-01,1.30E-01,4.87E+00,1.16E+01,1.10E-01,2.49E+00,3.00E-02,5.36E+00,0.25,0.025,0.8,0.1,25,2.5,292.45,49.03,2.79E+05,0,0,0,7850,0,3040,1025,1000,396.22,87.53,1,1,0.7
