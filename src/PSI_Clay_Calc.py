@@ -66,7 +66,6 @@ def A(OD, ID=0):
     Parameters
     ----------
     OD : float
-        The outer diameter of the circle (m)
     ID : float, optional
         The inner diameter of a ring (m)
 
@@ -82,8 +81,6 @@ def Abm(D, z):
     for i in range(len(z)):
         if z[i] < D[i] / 2:
             return (
-                np.arcsin(B(D[i], z[i]) / D[i]) * ((D[i] ** 2) / 4)
-                - (B(D[i], z[i]) * D[i] * np.cos(np.arcsin(B(D[i], z[i]) / D[i]))) / 4
             )
         else:
             return (np.pi * (D[i] ** 2) / 8) + D * (z[i] - (D[i] / 2))
@@ -461,6 +458,10 @@ def mc(idf):
     return df
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ce4312d (Refactors plotting into "create_fig" function)
 if __name__ == "__main__":
 
     start_time = time.time()
