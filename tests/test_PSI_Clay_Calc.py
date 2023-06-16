@@ -30,7 +30,7 @@ def test_B_z_less_than_D_over_2():
     z = 0.1
 
     actual = psi.B(D, z)
-    expected = 2 * (D * z - z**2) ** 0.5
+    expected = 0.6
 
     assert actual == expected
 
@@ -102,3 +102,34 @@ def test_lat_br():
     expected = 3.0246474
 
     assert actual == pytest.approx(expected)
+def test__Abm_z_less_than_D_over_2():
+
+    D = np.array([1, 1])
+    z = np.array([0.1, 0.1])
+
+    actual = psi._Abm_z_less_than_D_over_2(D, z)
+    expected = np.array([0.040875, 0.040875])
+
+    np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test__Abm_z_greater_than_D_over_2():
+
+    D = np.array([1, 1])
+    z = np.array([0.6, 0.6])
+
+    actual = psi._Abm_z_greater_than_D_over_2(D, z)
+    expected = np.array([0.492699, 0.492699])
+
+    np.testing.assert_array_almost_equal(actual, expected)
+
+def test_Abm():
+
+    D = np.array([1, 1])
+    z = np.array([0.1, 0.6])
+
+    actual = psi.Abm(D, z)
+    expected = np.array([0.040875, 0.492699])
+
+    np.testing.assert_array_almost_equal(actual, expected)
+
