@@ -81,6 +81,8 @@ def Abm(D, z):
     for i in range(len(z)):
         if z[i] < D[i] / 2:
             return (
+                np.arcsin(B(D[i], z[i]) / D[i]) * ((D[i] ** 2) / 4)
+                - (B(D[i], z[i]) * D[i] * np.cos(np.arcsin(B(D[i], z[i]) / D[i]))) / 4
             )
         else:
             return (np.pi * (D[i] ** 2) / 8) + D * (z[i] - (D[i] / 2))
@@ -459,9 +461,13 @@ def mc(idf):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> ce4312d (Refactors plotting into "create_fig" function)
+=======
+
+>>>>>>> ce4312d1a04bbcd06a8693e22db9efd112d93b18
 if __name__ == "__main__":
 
     start_time = time.time()
