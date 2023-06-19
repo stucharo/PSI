@@ -43,9 +43,30 @@ E_res = np.array(idf["E_res"])
 idf["n"] = 1000000
 
 # Vertical contact force to embed pipe in clay
-def Q_v(gamma, D, z, S_u):
+def Q_v(gamma_dash, D, z, S_u):
+    """
+    Calculate the vertical force, Qv, required to penetrate the pipe to the embedment, z, 
+    assuming linear increase in shear strength with depth. This reflects the Model 2 approach
+    presented in Eq. 4.8 of DNV-RP-F114 (2021).
+
+    Note that S_u should be a function of z but is not (yet).
+
+    TODO: make S_u a function of z.
+
+    Parameters
+    ----------
+    gamma_dash : np.ndarray(float)
+        Soil submerged unit weight (kg/m^3)
+    D : np.ndarray(float)
+        pipe outside diameter including coating (m)
+    z : np.ndarray(float)
+        pipe embedment (m)
+    S_u : np.ndarray(float)
+        soil undrained shear strength at pipe invert (and therefore a function of z)
+
+    """
     a = np.min(((6 * (z / D) ** 0.25), 3.4 * (10 * z / D) ** 0.5))
-    return (a + (1.5 * (gamma * Abm(D, z) / D * S_u))) * D * S_u
+    return (a + (1.5 * (gamma_dash * Abm(D, z) / D * S_u))) * D * S_u
 
 
 def W_sub(
