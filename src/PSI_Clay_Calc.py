@@ -49,11 +49,52 @@ def Q_v(gamma, D, z, S_u):
 
 
 def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont):
+    """
+    Calculate submerged weight of pipe.
+
+    Although the units of inputs are provided in kg-m-s units, the return value is provided
+    in kN.
+
+    TODO: understand why we need to change units halfway through, why can't we keep the whole
+    model in base units?
+
+    PARAMETERS
+    ----------
+    OD : float | np.ndarry
+        Steel outer diameter (m)
+    ID : float | nd.ndarray
+        Steel innder diameter (m)
+    rho_steel : float | np.ndarry
+        Steel density (kg*m^-3)
+    rho_conc : float | np.ndarry
+        Concrete density (kg*m^-3)
+    rho_coat : float | np.ndarry
+        Coating density (kg*m^-3)
+    rho_sw : float | np.ndarry
+        Seawater density (kg*m^-3)
+    t_coat : float | np.ndarry
+        Thickness of coating layer (m)
+    t_conc : float | np.ndarry
+        Thickness of concrete wight coating layer (m)
+    rho_cont : float | np.ndarry
+        Contents density (kg*m^-3)
+    
+    Returns
+    -------
+    W_sub : float | np.ndarry
+        Submerged weight of pipe (kN*m^-1)
+    """
+    # contents weight
     W_cont = A(ID, 0) * rho_cont * g
+    # steel weight
     W_steel = A(OD, ID) * rho_steel * g
+    # Corrosion coating weight
     W_coat = A(OD + 2 * t_coat, OD) * rho_coat * g
+    # Concrete weight coating weight
     W_conc = A(OD + 2 * t_coat + 2 * t_conc, OD + 2 * t_coat) * rho_conc * g
+    # Bouyancy
     B = A(OD + 2 * t_coat + 2 * t_conc, 0) * rho_sw * g
+    # Combined and convert to kN
     return (W_cont + W_steel + W_conc + W_coat - B) / 1000
 
 
