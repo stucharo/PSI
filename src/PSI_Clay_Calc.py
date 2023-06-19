@@ -78,7 +78,7 @@ def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_con
         Thickness of concrete wight coating layer (m)
     rho_cont : float | np.ndarry
         Contents density (kg*m^-3)
-    
+
     Returns
     -------
     W_sub : float | np.ndarry
@@ -115,7 +115,7 @@ def A(OD, ID=0):
     area : float
         The area of the circle or ring (m^2)
     """
-    return np.pi * (OD**2 - ID**2) / 4
+    return np.pi * (OD ** 2 - ID ** 2) / 4
 
 
 def Abm(D, z):
@@ -132,7 +132,7 @@ def Abm(D, z):
 def B(D, z):
     """
     Calculate the pipe-soil contact width.
-    
+
     Calculates the pipe-soil contact width as a functions of z using Eq. 4.3 in DNV-RP-F104 (2021)
 
     Parameters
@@ -141,21 +141,21 @@ def B(D, z):
         Overall diameter of pipe (m)
     z : float
         Penetration (m)
-    
+
     Returns
     -------
     B : float
         Pipe-soil contact width (m)
     """
     if z < D / 2:
-        return 2 * (((z * D) - (z**2)) ** 0.5)
+        return 2 * (((z * D) - (z ** 2)) ** 0.5)
     else:
         return D
 
 
 def k_lay(gamma, D, z, S_ur, T_0):
     _Q_V = Q_v(gamma, D, z, S_ur)
-    return 0.6 + 0.4 * ((_Q_V * EI) / ((T_0**2) * z)) ** 0.25
+    return 0.6 + 0.4 * ((_Q_V * EI) / ((T_0 ** 2) * z)) ** 0.25
 
 
 def z_inst_numba(compare, z, S_ur, S_ur_grad, S_ur_stds_away):
@@ -519,6 +519,7 @@ def mc(idf):
     [create_fig(title, data) for title, data in plots.items()]
 
     return df
+
 
 if __name__ == "__main__":
 

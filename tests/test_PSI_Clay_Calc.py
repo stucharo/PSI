@@ -8,7 +8,7 @@ def test_A():
     ID = 0.5
 
     actual = psi.A(OD, ID)
-    expected = pi * (OD**2 - ID**2) / 4
+    expected = pi * (OD ** 2 - ID ** 2) / 4
 
     assert actual == expected
 
@@ -17,7 +17,7 @@ def test_A_no_ID():
     OD = 1
 
     actual = psi.A(OD)
-    expected = pi * OD**2 / 4
+    expected = pi * OD ** 2 / 4
 
     assert actual == expected
 
@@ -27,7 +27,7 @@ def test_B_z_less_than_D_over_2():
     z = 0.1
 
     actual = psi.B(D, z)
-    expected = 2 * (D * z - z**2) ** 0.5
+    expected = 2 * (D * z - z ** 2) ** 0.5
 
     assert actual == expected
 
