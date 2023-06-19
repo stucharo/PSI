@@ -1,5 +1,7 @@
 from math import pi
 
+import pytest
+
 import src.PSI_Clay_Calc as psi
 
 
@@ -40,3 +42,36 @@ def test_B_z_greater_than_or_equal_to_D_over_2():
     expected = D
 
     assert actual == expected
+
+
+def test__cylinder_weight():
+
+    OD = 0.1683
+    ID = 0.1429
+    rho_steel = 7850
+
+    actual = psi._cylinder_weight(OD, ID, rho_steel)
+    expected = 477.918
+
+    assert actual == pytest.approx(expected)
+
+
+def test_W_sub():
+
+    OD = 0.1683
+    ID = 0.1429
+    rho_steel = 7850
+    rho_conc = 2400
+    rho_coat = 900
+    rho_sw = 1025
+    t_coat = 0.003
+    t_conc = 0.04
+    rho_cont = 150
+
+    actual = psi.W_sub(
+        OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont
+    )
+    expected = 0.6390397  # kN * m^-1
+
+    # mocked__cylinder_weight.assert_has_calls(calls, any_order=True)
+    assert actual == pytest.approx(expected)

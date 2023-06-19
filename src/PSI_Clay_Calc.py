@@ -48,13 +48,62 @@ def Q_v(gamma, D, z, S_u):
     return (a + (1.5 * (gamma * Abm(D, z) / D * S_u))) * D * S_u
 
 
-def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont):
-    W_cont = A(ID, 0) * rho_cont * g
-    W_steel = A(OD, ID) * rho_steel * g
-    W_coat = A(OD + 2 * t_coat, OD) * rho_coat * g
-    W_conc = A(OD + 2 * t_coat + 2 * t_conc, OD + 2 * t_coat) * rho_conc * g
-    B = A(OD + 2 * t_coat + 2 * t_conc, 0) * rho_sw * g
+def W_sub(
+    OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont, g=9.80665
+):
+    """
+    Calculate submerged weight of pipe.
+
+    Although the units of inputs are provided in kg-m-s units, the return value is provided
+    in kN.
+
+    TODO: understand why we need to change units halfway through, why can't we keep the whole
+    model in base units?
+
+    PARAMETERS
+    ----------
+    OD : float | np.ndarry
+        Steel outer diameter (m)
+    ID : float | nd.ndarray
+        Steel innder diameter (m)
+    rho_steel : float | np.ndarry
+        Steel density (kg*m^-3)
+    rho_conc : float | np.ndarry
+        Concrete density (kg*m^-3)
+    rho_coat : float | np.ndarry
+        Coating density (kg*m^-3)
+    rho_sw : float | np.ndarry
+        Seawater density (kg*m^-3)
+    t_coat : float | np.ndarry
+        Thickness of coating layer (m)
+    t_conc : float | np.ndarry
+        Thickness of concrete wight coating layer (m)
+    rho_cont : float | np.ndarry
+        Contents density (kg*m^-3)
+    g : float (optional)
+        Gravitational acceleration (m*s^-2)
+
+    Returns
+    -------
+    W_sub : float | np.ndarry
+        Submerged weight of pipe (kN*m^-1)
+    """
+    # contents weight
+    W_cont = _cylinder_weight(ID, 0, rho_cont)
+    # steel weight
+    W_steel = _cylinder_weight(OD, ID, rho_steel)
+    # Corrosion coating weight
+    W_coat = _cylinder_weight(OD + 2 * t_coat, OD, rho_coat)
+    # Concrete weight coating weight
+    W_conc = _cylinder_weight(OD + 2 * t_coat + 2 * t_conc, OD + 2 * t_coat, rho_conc)
+    # Bouyancy
+    B = _cylinder_weight(OD + 2 * t_coat + 2 * t_conc, 0, rho_sw)
+    # Combined and convert to kN
     return (W_cont + W_steel + W_conc + W_coat - B) / 1000
+
+
+def _cylinder_weight(OD, ID, rho, g=9.80665):
+    return A(OD, ID) * rho * g
 
 
 def A(OD, ID=0):
@@ -91,7 +140,7 @@ def Abm(D, z):
 def B(D, z):
     """
     Calculate the pipe-soil contact width.
-    
+
     Calculates the pipe-soil contact width as a functions of z using Eq. 4.3 in DNV-RP-F104 (2021)
 
     Parameters
@@ -100,7 +149,7 @@ def B(D, z):
         Overall diameter of pipe (m)
     z : float
         Penetration (m)
-    
+
     Returns
     -------
     B : float
@@ -478,6 +527,7 @@ def mc(idf):
     [create_fig(title, data) for title, data in plots.items()]
 
     return df
+
 
 if __name__ == "__main__":
 
