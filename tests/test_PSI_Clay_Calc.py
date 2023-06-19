@@ -87,3 +87,8 @@ def test_beta():
     expected = np.array([0.64350111, pi / 2, pi / 2])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_lat_br():
+
+    ...
