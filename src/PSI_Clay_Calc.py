@@ -48,7 +48,7 @@ def Q_v(gamma, D, z, S_u):
     return (a + (1.5 * (gamma * Abm(D, z) / D * S_u))) * D * S_u
 
 
-def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont):
+def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont, g=9.80665):
     """
     Calculate submerged weight of pipe.
 
@@ -78,6 +78,8 @@ def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_con
         Thickness of concrete wight coating layer (m)
     rho_cont : float | np.ndarry
         Contents density (kg*m^-3)
+    g : float (optional)
+        Gravitational acceleration (m*s^-2)
 
     Returns
     -------
@@ -85,17 +87,20 @@ def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_con
         Submerged weight of pipe (kN*m^-1)
     """
     # contents weight
-    W_cont = A(ID, 0) * rho_cont * g
+    W_cont = _cylinder_weight(ID, 0, rho_cont)
     # steel weight
-    W_steel = A(OD, ID) * rho_steel * g
+    W_steel = _cylinder_weight(OD, ID, rho_steel)
     # Corrosion coating weight
-    W_coat = A(OD + 2 * t_coat, OD) * rho_coat * g
+    W_coat = _cylinder_weight(OD + 2 * t_coat, OD, rho_coat)
     # Concrete weight coating weight
-    W_conc = A(OD + 2 * t_coat + 2 * t_conc, OD + 2 * t_coat) * rho_conc * g
+    W_conc = _cylinder_weight(OD + 2 * t_coat + 2 * t_conc, OD + 2 * t_coat, rho_conc)
     # Bouyancy
-    B = A(OD + 2 * t_coat + 2 * t_conc, 0) * rho_sw * g
+    B = _cylinder_weight(OD + 2 * t_coat + 2 * t_conc, 0, rho_sw)
     # Combined and convert to kN
     return (W_cont + W_steel + W_conc + W_coat - B) / 1000
+
+def _cylinder_weight(OD, ID, rho, g=9.80665):
+    return A(OD, ID) * rho * g
 
 
 def A(OD, ID=0):
