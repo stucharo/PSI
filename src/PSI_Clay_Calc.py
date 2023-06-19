@@ -280,11 +280,38 @@ def ax_res(axbr, E_res):
     return axbr * E_res
 
 
-def lat_br(z, D, Q_v, S_u, gamma, W_case):
+def lat_br(z, D, Q_v, S_u, gamma_dash, W_case):
+    """
+    Calculates the lateral breakout friction factor using Model 2 defined by Eq 4.22
+    of DNV-RP-F114 (2012).
+
+    This rearranges the equations as it's written to return the breakout force and then
+    divides by the submerged weight to calculate the friction factor.
+
+    Parameters
+    ----------
+    z : float | np.ndarray
+        Pipe pemetration (m)
+    D : float | np.ndarray
+        Pipe overall diameter (m)
+    Q_v : float | np.ndarray
+        Static vertical pipe-soil force for the condition considered, e.g. operation (N*m^-1)
+    S_u : float | np.ndarray
+        Soil undrained shear strength at the pipe invert depth (N*m^-1)
+    gamma_dash : float | np.ndarray
+        Soil submerged unit weight at the pipe invert depth (N*m^-1)
+    W_case : float | np.ndarray
+        Pipe unit weight for the condition considered, e.g. operation (m)
+
+    Returns
+    -------
+    lat_br : float | np.ndarray
+        Lateral breakout friction factor (-)
+    """
     return (
         (1.7 * ((z / D) ** 0.61))
         + (0.23 * (Q_v / (S_u * D)) ** 0.83)
-        + (0.6 * (gamma * D / S_u) * (z / D) ** 2) * S_u * D
+        + (0.6 * (gamma_dash * D / S_u) * (z / D) ** 2) * S_u * D
     ) / W_case
 
 
