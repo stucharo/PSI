@@ -1,6 +1,7 @@
 from math import pi
 
 import pytest
+import numpy as np
 
 import src.PSI_Clay_Calc as psi
 
@@ -75,3 +76,14 @@ def test_W_sub():
 
     # mocked__cylinder_weight.assert_has_calls(calls, any_order=True)
     assert actual == pytest.approx(expected)
+
+
+def test_beta():
+
+    D = np.array([1, 1, 1])
+    z = np.array([0.1, 0.6, 0.5])
+
+    actual = psi.beta(z, D)
+    expected = np.array([0.64350111, pi / 2, pi / 2])
+
+    np.testing.assert_array_almost_equal(actual, expected)
