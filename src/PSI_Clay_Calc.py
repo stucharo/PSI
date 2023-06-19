@@ -48,7 +48,9 @@ def Q_v(gamma, D, z, S_u):
     return (a + (1.5 * (gamma * Abm(D, z) / D * S_u))) * D * S_u
 
 
-def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont, g=9.80665):
+def W_sub(
+    OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont, g=9.80665
+):
     """
     Calculate submerged weight of pipe.
 
@@ -99,6 +101,7 @@ def W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_con
     # Combined and convert to kN
     return (W_cont + W_steel + W_conc + W_coat - B) / 1000
 
+
 def _cylinder_weight(OD, ID, rho, g=9.80665):
     return A(OD, ID) * rho * g
 
@@ -120,7 +123,7 @@ def A(OD, ID=0):
     area : float
         The area of the circle or ring (m^2)
     """
-    return np.pi * (OD ** 2 - ID ** 2) / 4
+    return np.pi * (OD**2 - ID**2) / 4
 
 
 def Abm(D, z):
@@ -153,14 +156,14 @@ def B(D, z):
         Pipe-soil contact width (m)
     """
     if z < D / 2:
-        return 2 * (((z * D) - (z ** 2)) ** 0.5)
+        return 2 * (((z * D) - (z**2)) ** 0.5)
     else:
         return D
 
 
 def k_lay(gamma, D, z, S_ur, T_0):
     _Q_V = Q_v(gamma, D, z, S_ur)
-    return 0.6 + 0.4 * ((_Q_V * EI) / ((T_0 ** 2) * z)) ** 0.25
+    return 0.6 + 0.4 * ((_Q_V * EI) / ((T_0**2) * z)) ** 0.25
 
 
 def z_inst_numba(compare, z, S_ur, S_ur_grad, S_ur_stds_away):

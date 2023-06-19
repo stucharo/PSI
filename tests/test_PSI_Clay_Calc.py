@@ -10,7 +10,7 @@ def test_A():
     ID = 0.5
 
     actual = psi.A(OD, ID)
-    expected = pi * (OD ** 2 - ID ** 2) / 4
+    expected = pi * (OD**2 - ID**2) / 4
 
     assert actual == expected
 
@@ -19,7 +19,7 @@ def test_A_no_ID():
     OD = 1
 
     actual = psi.A(OD)
-    expected = pi * OD ** 2 / 4
+    expected = pi * OD**2 / 4
 
     assert actual == expected
 
@@ -29,7 +29,7 @@ def test_B_z_less_than_D_over_2():
     z = 0.1
 
     actual = psi.B(D, z)
-    expected = 2 * (D * z - z ** 2) ** 0.5
+    expected = 2 * (D * z - z**2) ** 0.5
 
     assert actual == expected
 
@@ -45,7 +45,7 @@ def test_B_z_greater_than_or_equal_to_D_over_2():
 
 
 def test__cylinder_weight():
-    
+
     OD = 0.1683
     ID = 0.1429
     rho_steel = 7850
@@ -55,8 +55,9 @@ def test__cylinder_weight():
 
     assert actual == pytest.approx(expected)
 
+
 def test_W_sub():
-    
+
     OD = 0.1683
     ID = 0.1429
     rho_steel = 7850
@@ -67,7 +68,10 @@ def test_W_sub():
     t_conc = 0.04
     rho_cont = 150
 
-    actual = psi.W_sub(OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont)
-    expected = 0.6390397 # kN * m^-1
+    actual = psi.W_sub(
+        OD, ID, rho_steel, rho_conc, rho_coat, rho_sw, t_coat, t_conc, rho_cont
+    )
+    expected = 0.6390397  # kN * m^-1
 
-    assert actual==pytest.approx(expected)
+    # mocked__cylinder_weight.assert_has_calls(calls, any_order=True)
+    assert actual == pytest.approx(expected)
