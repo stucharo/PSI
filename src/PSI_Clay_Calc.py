@@ -247,8 +247,24 @@ def wedge_factor(z, D):
 
 
 def beta(z, D):
-    for i in range(len(z)):
-        return np.min((np.pi / 2, np.arccos(1 - (2 * z[i]) / D[i])))
+    """
+    Calculates beta for use when calculating the wedging factor
+
+    Beta is the angle depicted in Fig. 4-12 of DNV-RP-F114 (2021)
+
+    Parameters
+    ----------
+    z : float | np.ndarray
+        pipe penetration (m)
+    D: float | np.ndarray
+        overall diameter (m)
+
+    Returns
+    -------
+    beta : float | np.ndarray
+        angle beta from Fig. 4-12 of DNV-RP-F114 (2021)
+    """
+    return np.where(z <= D / 2, np.arccos(1 - (2 * z) / D), np.pi / 2)
 
 
 def OCR(W_hydro, W_case):
