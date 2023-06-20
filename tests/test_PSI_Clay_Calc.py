@@ -74,7 +74,6 @@ def test_W_sub():
     )
     expected = 0.6390397  # kN * m^-1
 
-    # mocked__cylinder_weight.assert_has_calls(calls, any_order=True)
     assert actual == pytest.approx(expected)
 
 
@@ -135,3 +134,15 @@ def test_Abm():
     expected = np.array([0.040875, 0.492699])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+def test_Q_v():
+
+    gamma_dash = 400 * 9.80665
+    D = 1
+    z = 0.1
+    S_u = 1000
+
+    actual = psi.Q_v(gamma_dash, D, z, S_u)
+    expected = 3614.55767342
+
+    assert actual == pytest.approx(expected)
