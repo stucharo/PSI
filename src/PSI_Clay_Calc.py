@@ -311,8 +311,8 @@ def lat_br(z, D, Q_v, S_u, gamma_dash, W_case):
     return (
         (1.7 * ((z / D) ** 0.61))
         + (0.23 * (Q_v / (S_u * D)) ** 0.83)
-        + (0.6 * (gamma_dash * D / S_u) * (z / D) ** 2) * S_u * D
-    ) / W_case
+        + (0.6 * (gamma_dash * D / S_u) * (z / D) ** 2)
+    ) * S_u * D / W_case
 
 
 def lat_res(z, D, W_case):
