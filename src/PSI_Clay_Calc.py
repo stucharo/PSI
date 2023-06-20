@@ -372,7 +372,7 @@ def lat_res(z, D, W_case):
     return (0.32 + (0.8 * (z / D) ** 0.8)) / W_case
 
 
-def create_fig(data, title, bins=100):
+def create_fig(title, data, bins=100):
     plt.hist(data, bins=bins)
     plt.title(f"{title}")
     plt.savefig(f"{title}.png")
@@ -603,8 +603,7 @@ def mc(idf):
         "S_u": df["S_u"],
         "Pipe Diameter": df["D"],
         "Embedment(install)": df["z_inst"],
-        "Axial Breakout(install)": df["axbr_inst"],
-        "Axial Breakout(install)": df["axbr_inst"],
+        "Axial Breakout(install)": df["axbr_inst"],       
         "Axial Residual(install)": df["axres_inst"],
         "Lateral Breakout(install)": df["latbr_inst"],
         "Lateral Residual(install)": df["latres_inst"],
