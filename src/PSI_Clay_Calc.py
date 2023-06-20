@@ -603,8 +603,7 @@ def mc(idf):
         "S_u": df["S_u"],
         "Pipe Diameter": df["D"],
         "Embedment(install)": df["z_inst"],
-        "Axial Breakout(install)": df["axbr_inst"],
-        
+        "Axial Breakout(install)": df["axbr_inst"],       
         "Axial Residual(install)": df["axres_inst"],
         "Lateral Breakout(install)": df["latbr_inst"],
         "Lateral Residual(install)": df["latres_inst"],
