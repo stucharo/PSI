@@ -11,7 +11,7 @@ def test_A():
     ID = 0.5
 
     actual = psi.A(OD, ID)
-    expected = pi * (OD ** 2 - ID ** 2) / 4
+    expected = pi * (OD**2 - ID**2) / 4
 
     assert actual == expected
 
@@ -20,7 +20,7 @@ def test_A_no_ID():
     OD = 1
 
     actual = psi.A(OD)
-    expected = pi * OD ** 2 / 4
+    expected = pi * OD**2 / 4
 
     assert actual == expected
 
@@ -134,6 +134,7 @@ def test_Abm():
     expected = np.array([0.040875, 0.492699])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
 
 def test_Q_v():
 

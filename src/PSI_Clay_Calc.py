@@ -45,7 +45,7 @@ idf["n"] = 1000000
 # Vertical contact force to embed pipe in clay
 def Q_v(gamma_dash, D, z, S_u):
     """
-    Calculate the vertical force, Qv, required to penetrate the pipe to the embedment, z, 
+    Calculate the vertical force, Qv, required to penetrate the pipe to the embedment, z,
     assuming linear increase in shear strength with depth. This reflects the Model 2 approach
     presented in Eq. 4.8 of DNV-RP-F114 (2021).
 
@@ -148,7 +148,7 @@ def A(OD, ID=0):
     area : float
         The area of the circle or ring (m^2)
     """
-    return np.pi * (OD ** 2 - ID ** 2) / 4
+    return np.pi * (OD**2 - ID**2) / 4
 
 
 def Abm(D, z):
@@ -191,7 +191,7 @@ def _Abm_z_less_than_D_over_2(D, z):
     """
     _B = B(D, z)
     asin_B_D = np.arcsin(_B / D)
-    return asin_B_D * D ** 2 / 4 - _B * D / 4 * np.cos(asin_B_D)
+    return asin_B_D * D**2 / 4 - _B * D / 4 * np.cos(asin_B_D)
 
 
 def _Abm_z_greater_than_D_over_2(D, z):
@@ -210,7 +210,7 @@ def _Abm_z_greater_than_D_over_2(D, z):
     Abm : np.ndarray
         penetrated cross-sectional area of the pipe when z >= D / 2 (m)
     """
-    return np.pi * D ** 2 / 8 + D * (z - D / 2)
+    return np.pi * D**2 / 8 + D * (z - D / 2)
 
 
 def B(D, z):
@@ -231,12 +231,12 @@ def B(D, z):
     B : np.ndarray
         Pipe-soil contact width (m)
     """
-    return np.where(z < D / 2, 2 * (((z * D) - (z ** 2)) ** 0.5), D)
+    return np.where(z < D / 2, 2 * (((z * D) - (z**2)) ** 0.5), D)
 
 
 def k_lay(gamma, D, z, S_ur, T_0):
     _Q_V = Q_v(gamma, D, z, S_ur)
-    return 0.6 + 0.4 * ((_Q_V * EI) / ((T_0 ** 2) * z)) ** 0.25
+    return 0.6 + 0.4 * ((_Q_V * EI) / ((T_0**2) * z)) ** 0.25
 
 
 def z_inst_numba(compare, z, S_ur, S_ur_grad, S_ur_stds_away):
@@ -628,7 +628,7 @@ def mc(idf):
         "S_u": df["S_u"],
         "Pipe Diameter": df["D"],
         "Embedment(install)": df["z_inst"],
-        "Axial Breakout(install)": df["axbr_inst"],       
+        "Axial Breakout(install)": df["axbr_inst"],
         "Axial Residual(install)": df["axres_inst"],
         "Lateral Breakout(install)": df["latbr_inst"],
         "Lateral Residual(install)": df["latres_inst"],
