@@ -87,3 +87,18 @@ def test_beta():
     expected = np.array([0.64350111, pi / 2, pi / 2])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_lat_br():
+
+    D = 1
+    z = 0.1
+    S_u = 4000
+    Q_v = 1e5
+    gamma_dash = 2500*9.80665
+    W_case = 5000
+
+    actual = psi.lat_br(z, D, Q_v, S_u, gamma_dash, W_case)
+    expected = 3.0246474
+
+    assert actual == pytest.approx(expected)
