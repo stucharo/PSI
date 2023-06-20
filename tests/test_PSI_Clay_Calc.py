@@ -137,12 +137,12 @@ def test_Abm():
 
 def test_Q_v():
 
-    gamma_dash = 400 * 9.80665
-    D = 1
-    z = 0.1
-    S_u = 1000
+    gamma_dash = np.array([400, 500, 600, 1000]) * 9.80665
+    D = np.array([1, 0.8, 1.2, 0.1])
+    z = np.array([0.1, 0.5, 0.12, 0.01])
+    S_u = np.array([1000, 2000, 3000, 4000])
 
     actual = psi.Q_v(gamma_dash, D, z, S_u)
-    expected = 3614.55767342
+    expected = np.array([3614.55767342, 10972.65014397, 12666.0736242, 1355.6319235])
 
-    assert actual == pytest.approx(expected)
+    np.testing.assert_array_almost_equal(actual, expected)

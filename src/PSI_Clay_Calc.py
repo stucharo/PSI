@@ -56,7 +56,7 @@ def Q_v(gamma_dash, D, z, S_u):
     Parameters
     ----------
     gamma_dash : float | np.ndarray
-        Soil submerged unit weight (kg/m^3)
+        Soil submerged unit weight (N/m^3)
     D : float | np.ndarray
         pipe outside diameter including coating (m)
     z : float | np.ndarray
@@ -69,7 +69,7 @@ def Q_v(gamma_dash, D, z, S_u):
     Q_v : float | np.ndarray
         Vertical force required to achieve penetration `z` (N*m^-1)
     """
-    a = np.min([6 * (z / D) ** 0.25, 3.4 * (10 * z / D) ** 0.5])
+    a = np.minimum(6 * (z / D) ** 0.25, 3.4 * (10 * z / D) ** 0.5)
     return (a + (1.5 * gamma_dash * Abm(D, z) / D / S_u)) * D * S_u
 
 
