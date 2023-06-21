@@ -11,7 +11,7 @@ def test_A():
     ID = 0.5
 
     actual = psi.A(OD, ID)
-    expected = pi * (OD ** 2 - ID ** 2) / 4
+    expected = pi * (OD**2 - ID**2) / 4
 
     assert actual == expected
 
@@ -20,7 +20,7 @@ def test_A_no_ID():
     OD = 1
 
     actual = psi.A(OD)
-    expected = pi * OD ** 2 / 4
+    expected = pi * OD**2 / 4
 
     assert actual == expected
 
@@ -74,7 +74,6 @@ def test_W_sub():
     )
     expected = 0.6390397  # kN * m^-1
 
-    # mocked__cylinder_weight.assert_has_calls(calls, any_order=True)
     assert actual == pytest.approx(expected)
 
 
@@ -133,5 +132,18 @@ def test_Abm():
 
     actual = psi.Abm(D, z)
     expected = np.array([0.040875, 0.492699])
+
+    np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_Q_v():
+
+    gamma_dash = np.array([400, 500, 600, 1000]) * 9.80665
+    D = np.array([1, 0.8, 1.2, 0.1])
+    z = np.array([0.1, 0.5, 0.12, 0.01])
+    S_u = np.array([1000, 2000, 3000, 4000])
+
+    actual = psi.Q_v(gamma_dash, D, z, S_u)
+    expected = np.array([3614.55767342, 10972.65014397, 12666.0736242, 1355.6319235])
 
     np.testing.assert_array_almost_equal(actual, expected)
