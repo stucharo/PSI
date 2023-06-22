@@ -438,7 +438,7 @@ def mc(idf):
     gamma = m[:, 2]
     gamma = np.array(
         truncnorm.rvs(
-            (0.001 - np.array(idf["gamma_mean"])) / np.array(idf["gamma_std"]),
+            (0.05 - np.array(idf["gamma_mean"])) / np.array(idf["gamma_std"]),
             (10 - np.array(idf["gamma_mean"])) / np.array(idf["gamma_std"]),
             np.array(idf["gamma_mean"]),
             np.array(idf["gamma_std"]),
@@ -448,7 +448,7 @@ def mc(idf):
     S_u = m[:, 0]
     S_u = np.array(
         truncnorm.rvs(
-            (0.001 - np.array(idf["S_u_mean"])) / np.array(idf["S_u_std"]),
+            (0.05 - np.array(idf["S_u_mean"])) / np.array(idf["S_u_std"]),
             (10 - np.array(idf["S_u_mean"])) / np.array(idf["S_u_std"]),
             np.array(idf["S_u_mean"]),
             np.array(idf["S_u_std"]),
@@ -458,7 +458,7 @@ def mc(idf):
     S_ur = m[:, 1]
     S_ur = np.array(
         truncnorm.rvs(
-            (0.001 - np.array(idf["S_ur_mean"])) / np.array(idf["S_ur_std"]),
+            (0.05 - np.array(idf["S_ur_mean"])) / np.array(idf["S_ur_std"]),
             (10 - np.array(idf["S_ur_mean"])) / np.array(idf["S_ur_std"]),
             np.array(idf["S_ur_mean"]),
             np.array(idf["S_ur_std"]),
