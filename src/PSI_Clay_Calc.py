@@ -234,9 +234,41 @@ def B(D, z):
     return np.where(z < D / 2, 2 * (((z * D) - (z**2)) ** 0.5), D)
 
 
-def k_lay(gamma, D, z, S_ur, T_0):
-    _Q_V = Q_v(gamma, D, z, S_ur)
-    return 0.6 + 0.4 * ((_Q_V * EI) / ((T_0**2) * z)) ** 0.25
+def k_lay(gamma_dash, D, z, EI, S_ur, T_0):
+    """
+    Calculates the touchdown lay factor.
+
+    Combines Eq. 4.13 and Eq. 4.14 from DNV-RP-F114 (2021).
+
+    Note that S_u should be a function of z but is not (yet). Also, I should be calculated
+    from the actual OD and wt for each simulation.
+
+    TODO: make S_u a function of z.
+    TODO: calculate I as an array based on OD and wt.
+    TODO: check if there should be a distribution of E
+
+    Parameters
+    ----------
+    gamma_dash : float | np.ndarray
+        Soil submerged unit weight at the pipe invert depth (N*m^-1)
+    D : float | np.ndarray
+        Pipe overall diameter (m)
+    z : float | np.ndarray
+        pipe penetration (m)
+    EI : float | np.ndarray
+        Pipe bending stiffness (N*m^2)
+    S_ur : float | np.ndarray
+        Remoulded soil undrained shear strength at the pipe invert depth (N*m^-1)
+    T_o : float | np.ndarray
+        Bottom lay tension (N)
+
+    Returns
+    -------
+    k_lay : float | np.ndarray
+        Touchdown lay factpr
+    """
+    _Q_V = Q_v(gamma_dash, D, z, S_ur)
+    return np.maximum(1, 0.6 + 0.4 * ((_Q_V * EI) / (T_0**2 * z)) ** 0.25)
 
 
 def z_inst_numba(compare, z, S_ur, S_ur_grad, S_ur_stds_away):
@@ -254,7 +286,7 @@ def solve_z_inst(df, gamma, D, z, S_ur, T_0, S_ur_stds_away):
         compare = np.array(df["compare"].values)
         z, S_ur = z_inst_numba(compare, z, S_ur, S_ur_grad, S_ur_stds_away)
         df["S_ur"] = S_ur
-        df["k_lay2"] = k_lay(gamma, D, z, S_ur, T_0)
+        df["k_lay2"] = k_lay(gamma, D, z, EI, S_ur, T_0)
         df["k_lay1"] = Q_v(gamma, D, z, S_ur) / df["W_inst"]
         df.loc[df["k_lay1"] < df["k_lay2"], "compare"] = "False"
         df.loc[df["k_lay1"] >= df["k_lay2"], "compare"] = "True"
@@ -549,7 +581,7 @@ def mc(idf):
 
     z = (D / D) * 0.001
 
-    df["k_lay2"] = k_lay(gamma, D, z, S_ur, T_0)
+    df["k_lay2"] = k_lay(gamma, D, z, EI, S_ur, T_0)
     df["k_lay1"] = Q_v(gamma, D, z, S_ur) / df["W_inst"]
     df.loc[df["k_lay1"] < df["k_lay2"], "compare"] = "False"
     df.loc[df["k_lay1"] >= df["k_lay2"], "compare"] = "True"
