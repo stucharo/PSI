@@ -314,9 +314,8 @@ def ax_br(alpha, csr, Q_v, m, g_rate, z, D, W_hydro, W_case):
 
 
 def wedge_factor(z, D):
-    return (2 * np.sin(beta(z, D))) / (
-        beta(z, D) + (np.sin(beta(z, D)) * np.cos(beta(z, D)))
-    )
+    _beta = beta(z, D)
+    return (2 * np.sin(_beta)) / (_beta + (np.sin(_beta) * np.cos(_beta)))
 
 
 def beta(z, D):

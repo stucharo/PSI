@@ -147,3 +147,14 @@ def test_Q_v():
     expected = np.array([3614.55767342, 10972.65014397, 12666.0736242, 1355.6319235])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_wedge_factor():
+
+    D = np.array([1, 1, 1])
+    z = np.array([0.1, 0.6, 0.5])
+
+    actual = psi.wedge_factor(z, D)
+    expected = np.array([1.06808973, 1.27323954, 1.27323954])
+
+    np.testing.assert_array_almost_equal(actual, expected)
