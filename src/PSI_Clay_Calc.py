@@ -341,12 +341,25 @@ def beta(z, D):
 
 
 def OCR(W_hydro, W_case):
-    OCR = W_hydro / W_case
-    for i in range(len(W_hydro)):
-        if OCR[i] > 1:
-            return OCR
-        else:
-            return 1
+    """
+    Calculate the overconsolidation ratio between the preloading (e.g. water filled)
+    case and any other case. This is described as gamma_pre in DNV-RP-F114 (2021)
+
+    TODO: consider renaming this to gamma_pre to reflect DNV-RP-F114 nomenclature.
+
+    Parameters
+    ----------
+    W_hydro : float | np.ndarry
+        Flooded pipe weight (N*m^-3)
+    W_case : float | np.ndarry
+        Pipe weight in current condition (N*m^-3)
+    
+    Returns
+    -------
+    OCR : float | np.ndarry
+        Overconsolidation ratio (-)
+    """
+    return np.where(W_hydro > W_case, W_hydro / W_case, 1)
 
 
 def ax_res(axbr, E_res):
