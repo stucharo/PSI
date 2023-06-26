@@ -323,7 +323,7 @@ def wedge_factor(z, D):
         Pipe penetration (m)
     D : float | np.ndarray
         Pipe diameter (m)
-    
+
     Returns
     -------
     wedge_factor : float | np.ndarray
