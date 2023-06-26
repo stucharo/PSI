@@ -171,6 +171,6 @@ def test_OCR():
     W_case = np.array([700, 600, 500])
 
     actual = psi.OCR(W_hydro, W_case)
-    expected = np.array([1, 1, 700/500])
+    expected = np.array([1, 1, 700 / 500])
 
     np.testing.assert_array_almost_equal(actual, expected)

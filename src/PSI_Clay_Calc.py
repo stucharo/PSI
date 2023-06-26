@@ -352,7 +352,7 @@ def OCR(W_hydro, W_case):
         Flooded pipe weight (N*m^-3)
     W_case : float | np.ndarry
         Pipe weight in current condition (N*m^-3)
-    
+
     Returns
     -------
     OCR : float | np.ndarry
