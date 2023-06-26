@@ -349,6 +349,21 @@ def OCR(W_hydro, W_case):
 
 
 def ax_res(axbr, E_res):
+    """
+    Calculate axial resistance based on Eq. 4.17 in DNV-RP-F114.
+
+    Parameters
+    ----------
+    axbr : float | np.ndarray
+        Axial breakout friction factor (-)
+    E_res : float | np.ndarray
+        Residual friction factor (-)
+
+    Returns
+    -------
+    ax_res : float | np.ndarray
+        Axial resistance (-)
+    """
     return axbr * E_res
 
 
