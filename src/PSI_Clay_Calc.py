@@ -314,6 +314,21 @@ def ax_br(alpha, csr, Q_v, m, g_rate, z, D, W_hydro, W_case):
 
 
 def wedge_factor(z, D):
+    """
+    Calculates the wedging factor for the beta calc.
+
+    Parameters
+    ----------
+    z : float | np.ndarray
+        Pipe penetration (m)
+    D : float | np.ndarray
+        Pipe diameter (m)
+    
+    Returns
+    -------
+    wedge_factor : float | np.ndarray
+        Pipe diameter (-)
+    """
     _beta = beta(z, D)
     return (2 * np.sin(_beta)) / (_beta + (np.sin(_beta) * np.cos(_beta)))
 
