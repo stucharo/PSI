@@ -156,6 +156,8 @@ def test_wedge_factor():
 
     actual = psi.wedge_factor(z, D)
     expected = np.array([1.06808973, 1.27323954, 1.27323954])
+
+
 def test_ax_res():
 
     axbr = np.array([300, 500, 700])
@@ -165,6 +167,8 @@ def test_ax_res():
     expected = axbr * E_res
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+
 def test_OCR():
 
     W_hydro = np.array([500, 600, 700])
