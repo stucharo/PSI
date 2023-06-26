@@ -147,3 +147,14 @@ def test_Q_v():
     expected = np.array([3614.55767342, 10972.65014397, 12666.0736242, 1355.6319235])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_ax_res():
+
+    axbr = np.array([300, 500, 700])
+    E_res = np.array([0.25, 0.45, 0.65])
+
+    actual = psi.ax_res(axbr, E_res)
+    expected = axbr * E_res
+
+    np.testing.assert_array_almost_equal(actual, expected)
