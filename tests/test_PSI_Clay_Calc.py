@@ -165,3 +165,12 @@ def test_ax_res():
     expected = axbr * E_res
 
     np.testing.assert_array_almost_equal(actual, expected)
+def test_OCR():
+
+    W_hydro = np.array([500, 600, 700])
+    W_case = np.array([700, 600, 500])
+
+    actual = psi.OCR(W_hydro, W_case)
+    expected = np.array([1, 1, 700/500])
+
+    np.testing.assert_array_almost_equal(actual, expected)
