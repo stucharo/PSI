@@ -178,6 +178,8 @@ def test_OCR():
 
     actual = psi.OCR(W_hydro, W_case)
     expected = np.array([1, 1, 700 / 500])
+
+
 def test_k_lay():
 
     gamma_dash = np.array([400, 600, 800]) * 9.80665
@@ -191,6 +193,7 @@ def test_k_lay():
     expected = np.array([1, 2.05226296, 1.27630148])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
 
 def test_mv_norm():
 
@@ -208,19 +211,33 @@ def test_mv_norm():
 
     mv_norms = psi.mv_norm(means, std_devs, corr, n)
 
-    S_u = mv_norms[:,0]
-    S_ur = mv_norms[:,1]
-    gamma = mv_norms[:,2]
+    S_u = mv_norms[:, 0]
+    S_ur = mv_norms[:, 1]
+    gamma = mv_norms[:, 2]
 
     # test that the index of the smallest value is the same in all arrays
-    np.testing.assert_array_almost_equal(np.where(S_u == S_u.min()), np.where(S_ur == S_ur.min()))
-    np.testing.assert_array_almost_equal(np.where(S_ur == S_ur.min()), np.where(gamma == gamma.min()))
+    np.testing.assert_array_almost_equal(
+        np.where(S_u == S_u.min()), np.where(S_ur == S_ur.min())
+    )
+    np.testing.assert_array_almost_equal(
+        np.where(S_ur == S_ur.min()), np.where(gamma == gamma.min())
+    )
 
     # test that the index of the largestvalue is the same in all arrays
-    np.testing.assert_array_almost_equal(np.where(S_u == S_u.max()), np.where(S_ur == S_ur.max()))
-    np.testing.assert_array_almost_equal(np.where(S_ur == S_ur.max()), np.where(gamma == gamma.max()))
-    
+    np.testing.assert_array_almost_equal(
+        np.where(S_u == S_u.max()), np.where(S_ur == S_ur.max())
+    )
+    np.testing.assert_array_almost_equal(
+        np.where(S_ur == S_ur.max()), np.where(gamma == gamma.max())
+    )
+
     # Check that the correllation coefficients are all equal
-    np.testing.assert_array_almost_equal(np.corrcoef(S_u, S_ur), np.corrcoef(S_u, gamma))
-    np.testing.assert_array_almost_equal(np.corrcoef(S_ur, gamma), np.corrcoef(S_ur, S_u))
-    np.testing.assert_array_almost_equal(np.corrcoef(gamma, S_u), np.corrcoef(gamma, S_ur))
+    np.testing.assert_array_almost_equal(
+        np.corrcoef(S_u, S_ur), np.corrcoef(S_u, gamma)
+    )
+    np.testing.assert_array_almost_equal(
+        np.corrcoef(S_ur, gamma), np.corrcoef(S_ur, S_u)
+    )
+    np.testing.assert_array_almost_equal(
+        np.corrcoef(gamma, S_u), np.corrcoef(gamma, S_ur)
+    )
