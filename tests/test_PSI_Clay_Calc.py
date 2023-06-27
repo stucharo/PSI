@@ -178,5 +178,16 @@ def test_OCR():
 
     actual = psi.OCR(W_hydro, W_case)
     expected = np.array([1, 1, 700 / 500])
+def test_k_lay():
+
+    gamma_dash = np.array([400, 600, 800]) * 9.80665
+    D = np.array([1, 0.3, 0.9])
+    z = np.array([0.1, 0.2, 0.01])
+    EI = np.array([1e6, 5e5, 2e6])
+    S_ur = np.array([1000, 4000, 10000])
+    T_0 = np.array([2.5e5, 1e4, 5e5])
+
+    actual = psi.k_lay(gamma_dash, D, z, EI, S_ur, T_0)
+    expected = np.array([1, 2.05226296, 1.27630148])
 
     np.testing.assert_array_almost_equal(actual, expected)
