@@ -191,3 +191,36 @@ def test_k_lay():
     expected = np.array([1, 2.05226296, 1.27630148])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+def test_mv_norm():
+
+    S_u_mean = 0.22
+    S_u_std = 0.13
+    S_ur_mean = 0.11
+    S_ur_std = 0.03
+    gamma_mean = 3.92
+    gamma_std = 0.53
+    corr = 1
+    n = 10
+
+    means = np.array([S_u_mean, S_ur_mean, gamma_mean])
+    std_devs = np.array([S_u_std, S_ur_std, gamma_std])
+
+    mv_norms = psi.mv_norm(means, std_devs, corr, n)
+
+    S_u = mv_norms[:,0]
+    S_ur = mv_norms[:,1]
+    gamma = mv_norms[:,2]
+
+    # test that the index of the smallest value is the same in all arrays
+    np.testing.assert_array_almost_equal(np.where(S_u == S_u.min()), np.where(S_ur == S_ur.min()))
+    np.testing.assert_array_almost_equal(np.where(S_ur == S_ur.min()), np.where(gamma == gamma.min()))
+
+    # test that the index of the largestvalue is the same in all arrays
+    np.testing.assert_array_almost_equal(np.where(S_u == S_u.max()), np.where(S_ur == S_ur.max()))
+    np.testing.assert_array_almost_equal(np.where(S_ur == S_ur.max()), np.where(gamma == gamma.max()))
+    
+    # Check that the correllation coefficients are all equal
+    np.testing.assert_array_almost_equal(np.corrcoef(S_u, S_ur), np.corrcoef(S_u, gamma))
+    np.testing.assert_array_almost_equal(np.corrcoef(S_ur, gamma), np.corrcoef(S_ur, S_u))
+    np.testing.assert_array_almost_equal(np.corrcoef(gamma, S_u), np.corrcoef(gamma, S_ur))

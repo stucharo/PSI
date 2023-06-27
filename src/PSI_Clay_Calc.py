@@ -478,6 +478,15 @@ def create_fig(title, data, bins=100):
     plt.clf()
 
 
+def mv_norm(means: np.ndarray, std_devs: np.ndarray, corr: float, n: int):
+
+    _c, c_ = np.meshgrid(std_devs, std_devs)
+    i = np.identity(std_devs.size)
+    covs = _c * c_ * ((~i.astype("bool")).astype("int8") * corr + i)
+
+    return np.random.multivariate_normal(means, covs, n)
+
+
 def mc(idf):
     corr = 1
     covs1 = np.array(
