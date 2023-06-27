@@ -157,6 +157,8 @@ def test_wedge_factor():
     actual = psi.wedge_factor(z, D)
     expected = np.array([1.06808973, 1.27323954, 1.27323954])
 
+    np.testing.assert_array_almost_equal(actual, expected)
+
 
 def test_ax_res():
 
