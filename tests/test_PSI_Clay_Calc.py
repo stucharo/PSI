@@ -147,3 +147,36 @@ def test_Q_v():
     expected = np.array([3614.55767342, 10972.65014397, 12666.0736242, 1355.6319235])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_wedge_factor():
+
+    D = np.array([1, 1, 1])
+    z = np.array([0.1, 0.6, 0.5])
+
+    actual = psi.wedge_factor(z, D)
+    expected = np.array([1.06808973, 1.27323954, 1.27323954])
+
+    np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_ax_res():
+
+    axbr = np.array([300, 500, 700])
+    E_res = np.array([0.25, 0.45, 0.65])
+
+    actual = psi.ax_res(axbr, E_res)
+    expected = axbr * E_res
+
+    np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_OCR():
+
+    W_hydro = np.array([500, 600, 700])
+    W_case = np.array([700, 600, 500])
+
+    actual = psi.OCR(W_hydro, W_case)
+    expected = np.array([1, 1, 700 / 500])
+
+    np.testing.assert_array_almost_equal(actual, expected)
