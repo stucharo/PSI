@@ -178,6 +178,10 @@ def test_OCR():
 
     actual = psi.OCR(W_hydro, W_case)
     expected = np.array([1, 1, 700 / 500])
+
+    np.testing.assert_array_almost_equal(actual, expected)
+
+
 def test_k_lay():
 
     gamma_dash = np.array([400, 600, 800]) * 9.80665
@@ -191,3 +195,78 @@ def test_k_lay():
     expected = np.array([1, 2.05226296, 1.27630148])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_mv_norm():
+
+    S_u_mean = 0.22
+    S_u_std = 0.13
+    S_ur_mean = 0.11
+    S_ur_std = 0.03
+    gamma_mean = 3.92
+    gamma_std = 0.53
+    corr = 1
+    n = 10
+
+    means = np.array([S_u_mean, S_ur_mean, gamma_mean])
+    std_devs = np.array([S_u_std, S_ur_std, gamma_std])
+
+    S_u, S_ur, gamma = psi.mv_norm(means, std_devs, corr, n)
+
+    # Check arrays are all 'n' elements long
+    assert S_u.size == S_ur.size == gamma.size == n
+
+    # test that the index of the smallest value is the same in all arrays
+    np.testing.assert_array_almost_equal(
+        np.where(S_u == S_u.min()), np.where(S_ur == S_ur.min())
+    )
+    np.testing.assert_array_almost_equal(
+        np.where(S_ur == S_ur.min()), np.where(gamma == gamma.min())
+    )
+
+    # test that the index of the largestvalue is the same in all arrays
+    np.testing.assert_array_almost_equal(
+        np.where(S_u == S_u.max()), np.where(S_ur == S_ur.max())
+    )
+    np.testing.assert_array_almost_equal(
+        np.where(S_ur == S_ur.max()), np.where(gamma == gamma.max())
+    )
+
+    # Check that the correllation coefficients are all equal
+    # Note: this is only valid where 'corr = 1'. For any other value of
+    # 'corr', these tests will ned to be updated to calculate the actual
+    # corrcoef. It might be best t factor the `covs` calulation into a
+    # seperate function in this case.
+    np.testing.assert_array_almost_equal(
+        np.corrcoef(S_u, S_ur), np.corrcoef(S_u, gamma), decimal=3
+    )
+    np.testing.assert_array_almost_equal(
+        np.corrcoef(S_ur, gamma), np.corrcoef(S_ur, S_u), decimal=3
+    )
+    np.testing.assert_array_almost_equal(
+        np.corrcoef(gamma, S_u), np.corrcoef(gamma, S_ur), decimal=3
+    )
+
+
+def test_get_soil_dist():
+
+    S_u_mean = 0.22
+    S_u_std = 0.13
+    S_ur_mean = 0.11
+    S_ur_std = 0.03
+    gamma_mean = 3.92
+    gamma_std = 0.53
+    corr = 1
+    n = 10_000
+
+    S_u = {"mean": S_u_mean, "std_dev": S_u_std, "min": 0}
+    S_ur = {"mean": S_ur_mean, "std_dev": S_ur_std, "min": 0}
+    gamma = {"mean": gamma_mean, "std_dev": gamma_std, "min": 0}
+
+    S_u_dist, S_ur_dist, gamma_dist = psi.get_soil_dist(S_u, S_ur, gamma, corr, n)
+
+    assert S_u_dist.size == S_ur_dist.size == gamma_dist.size == n
+
+    assert np.min(S_u_dist) >= S_u["min"]
+    assert np.min(S_ur_dist) >= S_ur["min"]
+    assert np.min(gamma_dist) >= gamma["min"]

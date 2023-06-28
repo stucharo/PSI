@@ -478,6 +478,117 @@ def create_fig(title, data, bins=100):
     plt.clf()
 
 
+def get_soil_dist(S_u, S_ur, gamma, corr, n):
+    """
+    Generates correlated distributions of S_u, S_ur and gamma, of size n and with invalid
+    values discarded.
+
+    S_u, S_ur and gamma are provided as dicts of the form:
+    {
+        "mean": float,
+        "std_dev": float,
+        "min": float,
+    }
+
+    This provides all information neccessary to generate correlated arrays with invalid
+    values removed i.e. values < 0.
+
+    Parameters
+    ----------
+    S_u : dict
+        Dict of soil undrained shear strength  (N*m^-1) (as described above)
+    S_ur : dict
+        Dict of soil remoulded undrained shear strength  (N*m^-1) (as described above)
+    gamma : dict
+        Dict of soil submerged weight  (N*m^-3) (as described above)
+    corr : float
+        Correlation factor for distributions (-)
+    n : int
+        Number of samples to draw in each distribution
+
+    Returns
+    -------
+    soil_dists : tuple of np.ndarrays
+        Tuple containing arrays of length `n` for `S_u`, `S_ur`, and `gamma` with
+        invalid values removed
+    """
+
+    # generate correlation arrays
+    means = np.array([S_u["mean"], S_ur["mean"], gamma["mean"]])
+    std_devs = np.array([S_u["std_dev"], S_ur["std_dev"], gamma["std_dev"]])
+
+    # create empty arrays to hold valid values
+    # note that a value of 0 is invalid for any of these arrays
+    trunc_S_u = np.zeros(n)
+    trunc_S_ur = np.zeros(n)
+    trunc_gamma = np.zeros(n)
+
+    while True:
+        # check if any zeros are left in the distributions. These are invalid so
+        # must be replaced. If no zeros are left then exit the while loop.
+        zeros = np.argwhere(trunc_S_u == 0)
+        if zeros.size == 0:
+            break
+
+        # the first element rpresents the first index that must be replaced
+        first_zero = zeros[0, 0]
+
+        # generated multivariate norm arrays of length equal to the number of
+        # zeros left in the `trunc_` arrays.
+        S_us, S_urs, gammas = mv_norm(means, std_devs, corr, n - first_zero)
+
+        # find all indices where all constraints are satifies across all arrays
+        idx = (S_us > S_u["min"]) * (S_urs > S_ur["min"]) * (gammas > gamma["min"])
+
+        # remove invalid indices
+        S_us = np.delete(S_us, ~idx)
+        S_urs = np.delete(S_urs, ~idx)
+        gammas = np.delete(gammas, ~idx)
+
+        # add valid values to truncated arrays
+        end_idx = S_us.size + first_zero
+        trunc_S_u[first_zero:end_idx] = S_us
+        trunc_S_ur[first_zero:end_idx] = S_urs
+        trunc_gamma[first_zero:end_idx] = gammas
+
+    return trunc_S_u, trunc_S_ur, trunc_gamma
+
+
+def mv_norm(means: np.ndarray, std_devs: np.ndarray, corr: float, n: int):
+    """
+    Generates a multi-variate normal distribution with a given correlation between
+    distributions.
+
+    Parameters
+    ----------
+    means : np,ndarray
+        Array of means for each ditribution in same order as std_devs
+    std_devs : np.ndarray
+        Array of std_devs for each ditribution in same order as `means`
+    corr : float
+        Correlation factor. In this case the same correlation is applied to all
+        distributions.
+    n : int
+        Number of samples to draw in each distribution
+
+    Returns
+    -------
+    mv_norms : tuple of np.ndarrays
+        A tuple containing a normal distribution for each mean and std_dev combination
+    """
+
+    # create array of covs
+    _c, c_ = np.meshgrid(std_devs, std_devs)
+    i = np.identity(std_devs.size)
+    covs = _c * c_ * ((~i.astype("bool")).astype("int8") * corr + i)
+
+    # draw n samples for each mean
+    mv_norms = np.random.multivariate_normal(means, covs, n)
+
+    # unpack np.ndarry into tuple of arrays for each distribution
+    return (mv_norms[:, i] for i in range(means.size))
+
+
 def mc(idf):
     corr = 1
     covs1 = np.array(
