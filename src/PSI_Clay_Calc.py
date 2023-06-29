@@ -43,15 +43,11 @@ E_res = np.array(idf["E_res"])
 idf["n"] = 1000000
 
 # Vertical contact force to embed pipe in clay
-def Q_v(gamma_dash, D, z, S_u):
+def Q_v(gamma_dash, D, z, S_u_mudline, S_u_gradient):
     """
     Calculate the vertical force, Qv, required to penetrate the pipe to the embedment, z,
     assuming linear increase in shear strength with depth. This reflects the Model 2 approach
     presented in Eq. 4.8 of DNV-RP-F114 (2021).
-
-    Note that S_u should be a function of z but is not (yet).
-
-    TODO: make S_u a function of z.
 
     Parameters
     ----------
@@ -61,8 +57,10 @@ def Q_v(gamma_dash, D, z, S_u):
         pipe outside diameter including coating (m)
     z : float | np.ndarray
         pipe embedment (m)
-    S_u : float | np.ndarray
-        soil undrained shear strength at pipe invert (and therefore a function of z)
+    S_u_mudline : float | np.ndarray
+        soil undrained shear strength at the mudline (Pa)
+    S_u_gradient : float | np.ndarray
+        soil undrained shear strength gradient (Pa * m^-1)
 
     Returns
     -------
@@ -70,7 +68,29 @@ def Q_v(gamma_dash, D, z, S_u):
         Vertical force required to achieve penetration `z` (N*m^-1)
     """
     a = np.minimum(6 * (z / D) ** 0.25, 3.4 * (10 * z / D) ** 0.5)
-    return (a + (1.5 * gamma_dash * Abm(D, z) / D / S_u)) * D * S_u
+    _S_u = S_u(z, S_u_mudline, S_u_gradient)
+    return (a + (1.5 * gamma_dash * Abm(D, z) / D / _S_u)) * D * _S_u
+
+
+def S_u(z, S_u_mudline, S_u_gradient):
+    """
+    Determine the soil shear strength at a given depth `z`.
+
+    Parameters
+    ----------
+    z : float | np.ndarray
+        pipe penetration (m)
+    S_u_mudline : float | np.ndarray
+        soil undrained shear strength at the mudline (Pa)
+    S_u_gradient : float | np.ndarray
+        soil undrained shear strength gradient (Pa * m^-1)
+
+    Returns
+    -------
+    S_u : float | np.ndarray
+        soil undrained shear strength at depth `z` (Pa)
+    """
+    return S_u_mudline + S_u_gradient * z
 
 
 def W_sub(
@@ -234,16 +254,14 @@ def B(D, z):
     return np.where(z < D / 2, 2 * (((z * D) - (z**2)) ** 0.5), D)
 
 
-def k_lay(gamma_dash, D, z, EI, S_ur, T_0):
+def k_lay(gamma_dash, D, z, EI, S_u_mudline, S_u_gradient, T_0):
     """
     Calculates the touchdown lay factor.
 
     Combines Eq. 4.13 and Eq. 4.14 from DNV-RP-F114 (2021).
 
-    Note that S_u should be a function of z but is not (yet). Also, I should be calculated
-    from the actual OD and wt for each simulation.
+    Note that `I` should be calculated from the actual OD and wt for each simulation.
 
-    TODO: make S_u a function of z.
     TODO: calculate I as an array based on OD and wt.
     TODO: check if there should be a distribution of E
 
@@ -257,8 +275,10 @@ def k_lay(gamma_dash, D, z, EI, S_ur, T_0):
         pipe penetration (m)
     EI : float | np.ndarray
         Pipe bending stiffness (N*m^2)
-    S_ur : float | np.ndarray
-        Remoulded soil undrained shear strength at the pipe invert depth (N*m^-1)
+    S_u_mudline : float | np.ndarray
+        soil undrained shear strength at the mudline (Pa)
+    S_u_gradient : float | np.ndarray
+        soil undrained shear strength gradient (Pa * m^-1)
     T_o : float | np.ndarray
         Bottom lay tension (N)
 
@@ -267,7 +287,7 @@ def k_lay(gamma_dash, D, z, EI, S_ur, T_0):
     k_lay : float | np.ndarray
         Touchdown lay factpr
     """
-    _Q_V = Q_v(gamma_dash, D, z, S_ur)
+    _Q_V = Q_v(gamma_dash, D, z, S_u_mudline, S_u_gradient)
     return np.maximum(1, 0.6 + 0.4 * ((_Q_V * EI) / (T_0**2 * z)) ** 0.25)
 
 

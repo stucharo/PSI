@@ -141,10 +141,11 @@ def test_Q_v():
     gamma_dash = np.array([400, 500, 600, 1000]) * 9.80665
     D = np.array([1, 0.8, 1.2, 0.1])
     z = np.array([0.1, 0.5, 0.12, 0.01])
-    S_u = np.array([1000, 2000, 3000, 4000])
+    S_u_mudline = np.array([1000, 2000, 3000, 4000])
+    S_u_gradient = np.array([4000, 3000, 2000, 1000])
 
-    actual = psi.Q_v(gamma_dash, D, z, S_u)
-    expected = np.array([3614.55767342, 10972.65014397, 12666.0736242, 1355.6319235])
+    actual = psi.Q_v(gamma_dash, D, z, S_u_mudline, S_u_gradient)
+    expected = np.array([4964.17685388, 17374.45602011, 13637.7994342, 1359.0059715])
 
     np.testing.assert_array_almost_equal(actual, expected)
 
@@ -188,11 +189,12 @@ def test_k_lay():
     D = np.array([1, 0.3, 0.9])
     z = np.array([0.1, 0.2, 0.01])
     EI = np.array([1e6, 5e5, 2e6])
-    S_ur = np.array([1000, 4000, 10000])
+    S_u_mudline = np.array([1000, 4000, 10000])
+    S_u_gradient = np.array([10000, 4000, 1000])
     T_0 = np.array([2.5e5, 1e4, 5e5])
 
-    actual = psi.k_lay(gamma_dash, D, z, EI, S_ur, T_0)
-    expected = np.array([1, 2.05226296, 1.27630148])
+    actual = psi.k_lay(gamma_dash, D, z, EI, S_u_mudline, S_u_gradient, T_0)
+    expected = np.array([1.01132738, 2.11592433, 1.27647024])
 
     np.testing.assert_array_almost_equal(actual, expected)
 
@@ -270,3 +272,15 @@ def test_get_soil_dist():
     assert np.min(S_u_dist) >= S_u["min"]
     assert np.min(S_ur_dist) >= S_ur["min"]
     assert np.min(gamma_dist) >= gamma["min"]
+
+
+def test_S_u():
+
+    S_u_mudline = np.array([100, 5000, 10000])  # Pa
+    S_u_gradient = np.array([3000, 4000, 500])  # Pa / m
+    z = np.array([1, 0.6, 0.01])
+
+    actual = psi.S_u(z, S_u_mudline, S_u_gradient)
+    expected = np.array([3100, 7400, 10005])
+
+    np.testing.assert_array_almost_equal(actual, expected)
