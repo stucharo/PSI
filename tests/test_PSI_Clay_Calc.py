@@ -289,3 +289,27 @@ def test_S_u():
     expected = np.array([3100, 7400, 10005])
 
     np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_get_S_u_gradient_dists():
+
+    S_u_gradient_mean = 0.22
+    S_u_gradient_std = 0.13
+    S_ur_gradient_mean = 0.11
+    S_ur_gradient_std = 0.03
+    corr = 1
+    n = 10_000
+
+    S_u_gradient = {"mean": S_u_gradient_mean, "std_dev": S_u_gradient_std, "min": 0}
+    S_ur_gradient = {"mean": S_ur_gradient_mean, "std_dev": S_ur_gradient_std, "min": 0}
+
+    S_u_gradient_dist, S_ur_gradient_dist = psi.get_S_u_gradient_dists(
+        S_u_gradient, S_ur_gradient, corr, n
+    )
+
+    # check array sizes
+    assert S_u_gradient_dist.size == S_ur_gradient_dist.size == n
+
+    # check all values are greater than minimum
+    assert np.min(S_u_gradient_dist) >= S_u_gradient["min"]
+    assert np.min(S_ur_gradient_dist) >= S_ur_gradient["min"]
