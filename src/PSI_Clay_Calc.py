@@ -511,7 +511,7 @@ def get_soil_dist(S_u, S_ur, gamma, corr, n):
     }
 
     This provides all information neccessary to generate correlated arrays with invalid
-    values removed i.e. values < 0.
+    values removed i.e. values < 0 and where S_ur > S_u.
 
     Parameters
     ----------
@@ -558,7 +558,12 @@ def get_soil_dist(S_u, S_ur, gamma, corr, n):
         S_us, S_urs, gammas = mv_norm(means, std_devs, corr, n - first_zero)
 
         # find all indices where all constraints are satifies across all arrays
-        idx = (S_us > S_u["min"]) * (S_urs > S_ur["min"]) * (gammas > gamma["min"])
+        idx = (
+            (S_us > S_u["min"])                 # S_u greater than minimum
+            * (S_urs > S_ur["min"])             # S_ur greater than minimum
+            * (gammas > gamma["min"])           # gamma greater than minimum
+            * (S_us > S_urs)                    # S_u greater S_ur
+        )
 
         # remove invalid indices
         S_us = np.delete(S_us, ~idx)

@@ -226,7 +226,7 @@ def test_mv_norm():
         np.where(S_ur == S_ur.min()), np.where(gamma == gamma.min())
     )
 
-    # test that the index of the largestvalue is the same in all arrays
+    # test that the index of the largest value is the same in all arrays
     np.testing.assert_array_almost_equal(
         np.where(S_u == S_u.max()), np.where(S_ur == S_ur.max())
     )
@@ -267,11 +267,16 @@ def test_get_soil_dist():
 
     S_u_dist, S_ur_dist, gamma_dist = psi.get_soil_dist(S_u, S_ur, gamma, corr, n)
 
+    # check array sizes
     assert S_u_dist.size == S_ur_dist.size == gamma_dist.size == n
 
+    # check all values are greater than minimum
     assert np.min(S_u_dist) >= S_u["min"]
     assert np.min(S_ur_dist) >= S_ur["min"]
     assert np.min(gamma_dist) >= gamma["min"]
+
+    # check S_ur does not exceed S_u
+    assert np.all(np.greater(S_u_dist, S_ur_dist))
 
 
 def test_S_u():
