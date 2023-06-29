@@ -559,10 +559,10 @@ def get_soil_dist(S_u, S_ur, gamma, corr, n):
 
         # find all indices where all constraints are satifies across all arrays
         idx = (
-            (S_us > S_u["min"])                 # S_u greater than minimum
-            * (S_urs > S_ur["min"])             # S_ur greater than minimum
-            * (gammas > gamma["min"])           # gamma greater than minimum
-            * (S_us > S_urs)                    # S_u greater S_ur
+            (S_us > S_u["min"])  # S_u greater than minimum
+            * (S_urs > S_ur["min"])  # S_ur greater than minimum
+            * (gammas > gamma["min"])  # gamma greater than minimum
+            * (S_us > S_urs)  # S_u greater S_ur
         )
 
         # remove invalid indices
