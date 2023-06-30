@@ -43,15 +43,11 @@ E_res = np.array(idf["E_res"])
 idf["n"] = 1000000
 
 # Vertical contact force to embed pipe in clay
-def Q_v(gamma_dash, D, z, S_u):
+def Q_v(gamma_dash, D, z, S_u_mudline, S_u_gradient):
     """
     Calculate the vertical force, Qv, required to penetrate the pipe to the embedment, z,
     assuming linear increase in shear strength with depth. This reflects the Model 2 approach
     presented in Eq. 4.8 of DNV-RP-F114 (2021).
-
-    Note that S_u should be a function of z but is not (yet).
-
-    TODO: make S_u a function of z.
 
     Parameters
     ----------
@@ -61,8 +57,10 @@ def Q_v(gamma_dash, D, z, S_u):
         pipe outside diameter including coating (m)
     z : float | np.ndarray
         pipe embedment (m)
-    S_u : float | np.ndarray
-        soil undrained shear strength at pipe invert (and therefore a function of z)
+    S_u_mudline : float | np.ndarray
+        soil undrained shear strength at the mudline (Pa)
+    S_u_gradient : float | np.ndarray
+        soil undrained shear strength gradient (Pa * m^-1)
 
     Returns
     -------
@@ -70,7 +68,29 @@ def Q_v(gamma_dash, D, z, S_u):
         Vertical force required to achieve penetration `z` (N*m^-1)
     """
     a = np.minimum(6 * (z / D) ** 0.25, 3.4 * (10 * z / D) ** 0.5)
-    return (a + (1.5 * gamma_dash * Abm(D, z) / D / S_u)) * D * S_u
+    _S_u = S_u(z, S_u_mudline, S_u_gradient)
+    return (a + (1.5 * gamma_dash * Abm(D, z) / D / _S_u)) * D * _S_u
+
+
+def S_u(z, S_u_mudline, S_u_gradient):
+    """
+    Determine the soil shear strength at a given depth `z`.
+
+    Parameters
+    ----------
+    z : float | np.ndarray
+        pipe penetration (m)
+    S_u_mudline : float | np.ndarray
+        soil undrained shear strength at the mudline (Pa)
+    S_u_gradient : float | np.ndarray
+        soil undrained shear strength gradient (Pa * m^-1)
+
+    Returns
+    -------
+    S_u : float | np.ndarray
+        soil undrained shear strength at depth `z` (Pa)
+    """
+    return S_u_mudline + S_u_gradient * z
 
 
 def W_sub(
@@ -234,16 +254,14 @@ def B(D, z):
     return np.where(z < D / 2, 2 * (((z * D) - (z**2)) ** 0.5), D)
 
 
-def k_lay(gamma_dash, D, z, EI, S_ur, T_0):
+def k_lay(gamma_dash, D, z, EI, S_u_mudline, S_u_gradient, T_0):
     """
     Calculates the touchdown lay factor.
 
     Combines Eq. 4.13 and Eq. 4.14 from DNV-RP-F114 (2021).
 
-    Note that S_u should be a function of z but is not (yet). Also, I should be calculated
-    from the actual OD and wt for each simulation.
+    Note that `I` should be calculated from the actual OD and wt for each simulation.
 
-    TODO: make S_u a function of z.
     TODO: calculate I as an array based on OD and wt.
     TODO: check if there should be a distribution of E
 
@@ -257,8 +275,10 @@ def k_lay(gamma_dash, D, z, EI, S_ur, T_0):
         pipe penetration (m)
     EI : float | np.ndarray
         Pipe bending stiffness (N*m^2)
-    S_ur : float | np.ndarray
-        Remoulded soil undrained shear strength at the pipe invert depth (N*m^-1)
+    S_u_mudline : float | np.ndarray
+        soil undrained shear strength at the mudline (Pa)
+    S_u_gradient : float | np.ndarray
+        soil undrained shear strength gradient (Pa * m^-1)
     T_o : float | np.ndarray
         Bottom lay tension (N)
 
@@ -267,7 +287,7 @@ def k_lay(gamma_dash, D, z, EI, S_ur, T_0):
     k_lay : float | np.ndarray
         Touchdown lay factpr
     """
-    _Q_V = Q_v(gamma_dash, D, z, S_ur)
+    _Q_V = Q_v(gamma_dash, D, z, S_u_mudline, S_u_gradient)
     return np.maximum(1, 0.6 + 0.4 * ((_Q_V * EI) / (T_0**2 * z)) ** 0.25)
 
 
@@ -491,7 +511,7 @@ def get_soil_dist(S_u, S_ur, gamma, corr, n):
     }
 
     This provides all information neccessary to generate correlated arrays with invalid
-    values removed i.e. values < 0.
+    values removed i.e. values < 0 and where S_ur > S_u.
 
     Parameters
     ----------
@@ -538,7 +558,12 @@ def get_soil_dist(S_u, S_ur, gamma, corr, n):
         S_us, S_urs, gammas = mv_norm(means, std_devs, corr, n - first_zero)
 
         # find all indices where all constraints are satifies across all arrays
-        idx = (S_us > S_u["min"]) * (S_urs > S_ur["min"]) * (gammas > gamma["min"])
+        idx = (
+            (S_us > S_u["min"])  # S_u greater than minimum
+            * (S_urs > S_ur["min"])  # S_ur greater than minimum
+            * (gammas > gamma["min"])  # gamma greater than minimum
+            * (S_us > S_urs)  # S_u greater S_ur
+        )
 
         # remove invalid indices
         S_us = np.delete(S_us, ~idx)
@@ -552,6 +577,81 @@ def get_soil_dist(S_u, S_ur, gamma, corr, n):
         trunc_gamma[first_zero:end_idx] = gammas
 
     return trunc_S_u, trunc_S_ur, trunc_gamma
+
+
+def get_S_u_gradient_dists(S_u_gradient, S_ur_gradient, corr, n):
+    """
+    Generates correlated distributions of S_u_gradient, abd S_ur_gradient of size n and
+    with invalid values discarded.
+
+    S_u_gradient and S_ur_gradient are provided as dicts of the form:
+    {
+        "mean": float,
+        "std_dev": float,
+        "min": float,
+    }
+
+    This provides all information neccessary to generate correlated arrays with invalid
+    values removed i.e. values < 0.
+
+    Parameters
+    ----------
+    S_u_gradient : dict
+        Dict of soil undrained shear strength gradient  (N*m^-1) (as described above)
+    S_ur_gradient : dict
+        Dict of soil remoulded undrained shear strength gradient  (N*m^-1) (as described above)
+    corr : float
+        Correlation factor for distributions (-)
+    n : int
+        Number of samples to draw in each distribution
+
+    Returns
+    -------
+    soil_gradient_dists : tuple of np.ndarrays
+        Tuple containing arrays of length `n` for `S_u_gradient` and `S_ur_gradient` with
+        invalid values removed
+    """
+
+    # generate correlation arrays
+    means = np.array([S_u_gradient["mean"], S_ur_gradient["mean"]])
+    std_devs = np.array([S_u_gradient["std_dev"], S_ur_gradient["std_dev"]])
+
+    # create empty arrays to hold valid values
+    # note that a value of 0 is invalid for any of these arrays
+    trunc_S_u_gradient = np.zeros(n)
+    trunc_S_ur_gradient = np.zeros(n)
+
+    while True:
+        # check if any zeros are left in the distributions. These are invalid so
+        # must be replaced. If no zeros are left then exit the while loop.
+        zeros = np.argwhere(trunc_S_u_gradient == 0)
+        if zeros.size == 0:
+            break
+
+        # the first element rpresents the first index that must be replaced
+        first_zero = zeros[0, 0]
+
+        # generated multivariate norm arrays of length equal to the number of
+        # zeros left in the `trunc_` arrays.
+        S_u_gradients, S_ur_gradients = mv_norm(means, std_devs, corr, n - first_zero)
+
+        # find all indices where all constraints are satifies across all arrays
+        idx = (
+            S_u_gradients > S_u_gradient["min"]
+        ) * (  # S_u_gradients greater than minimum
+            S_ur_gradients > S_ur_gradient["min"]
+        )  # S_ur_gradients greater than minimum
+
+        # remove invalid indices
+        S_u_gradients = np.delete(S_u_gradients, ~idx)
+        S_ur_gradients = np.delete(S_ur_gradients, ~idx)
+
+        # add valid values to truncated arrays
+        end_idx = S_u_gradients.size + first_zero
+        trunc_S_u_gradient[first_zero:end_idx] = S_u_gradients
+        trunc_S_ur_gradient[first_zero:end_idx] = S_ur_gradients
+
+    return trunc_S_u_gradient, trunc_S_ur_gradient
 
 
 def mv_norm(means: np.ndarray, std_devs: np.ndarray, corr: float, n: int):

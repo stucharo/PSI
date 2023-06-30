@@ -141,10 +141,11 @@ def test_Q_v():
     gamma_dash = np.array([400, 500, 600, 1000]) * 9.80665
     D = np.array([1, 0.8, 1.2, 0.1])
     z = np.array([0.1, 0.5, 0.12, 0.01])
-    S_u = np.array([1000, 2000, 3000, 4000])
+    S_u_mudline = np.array([1000, 2000, 3000, 4000])
+    S_u_gradient = np.array([4000, 3000, 2000, 1000])
 
-    actual = psi.Q_v(gamma_dash, D, z, S_u)
-    expected = np.array([3614.55767342, 10972.65014397, 12666.0736242, 1355.6319235])
+    actual = psi.Q_v(gamma_dash, D, z, S_u_mudline, S_u_gradient)
+    expected = np.array([4964.17685388, 17374.45602011, 13637.7994342, 1359.0059715])
 
     np.testing.assert_array_almost_equal(actual, expected)
 
@@ -188,11 +189,12 @@ def test_k_lay():
     D = np.array([1, 0.3, 0.9])
     z = np.array([0.1, 0.2, 0.01])
     EI = np.array([1e6, 5e5, 2e6])
-    S_ur = np.array([1000, 4000, 10000])
+    S_u_mudline = np.array([1000, 4000, 10000])
+    S_u_gradient = np.array([10000, 4000, 1000])
     T_0 = np.array([2.5e5, 1e4, 5e5])
 
-    actual = psi.k_lay(gamma_dash, D, z, EI, S_ur, T_0)
-    expected = np.array([1, 2.05226296, 1.27630148])
+    actual = psi.k_lay(gamma_dash, D, z, EI, S_u_mudline, S_u_gradient, T_0)
+    expected = np.array([1.01132738, 2.11592433, 1.27647024])
 
     np.testing.assert_array_almost_equal(actual, expected)
 
@@ -224,7 +226,7 @@ def test_mv_norm():
         np.where(S_ur == S_ur.min()), np.where(gamma == gamma.min())
     )
 
-    # test that the index of the largestvalue is the same in all arrays
+    # test that the index of the largest value is the same in all arrays
     np.testing.assert_array_almost_equal(
         np.where(S_u == S_u.max()), np.where(S_ur == S_ur.max())
     )
@@ -265,8 +267,49 @@ def test_get_soil_dist():
 
     S_u_dist, S_ur_dist, gamma_dist = psi.get_soil_dist(S_u, S_ur, gamma, corr, n)
 
+    # check array sizes
     assert S_u_dist.size == S_ur_dist.size == gamma_dist.size == n
 
+    # check all values are greater than minimum
     assert np.min(S_u_dist) >= S_u["min"]
     assert np.min(S_ur_dist) >= S_ur["min"]
     assert np.min(gamma_dist) >= gamma["min"]
+
+    # check S_ur does not exceed S_u
+    assert np.all(np.greater(S_u_dist, S_ur_dist))
+
+
+def test_S_u():
+
+    S_u_mudline = np.array([100, 5000, 10000])  # Pa
+    S_u_gradient = np.array([3000, 4000, 500])  # Pa / m
+    z = np.array([1, 0.6, 0.01])
+
+    actual = psi.S_u(z, S_u_mudline, S_u_gradient)
+    expected = np.array([3100, 7400, 10005])
+
+    np.testing.assert_array_almost_equal(actual, expected)
+
+
+def test_get_S_u_gradient_dists():
+
+    S_u_gradient_mean = 0.22
+    S_u_gradient_std = 0.13
+    S_ur_gradient_mean = 0.11
+    S_ur_gradient_std = 0.03
+    corr = 1
+    n = 10_000
+
+    S_u_gradient = {"mean": S_u_gradient_mean, "std_dev": S_u_gradient_std, "min": 0}
+    S_ur_gradient = {"mean": S_ur_gradient_mean, "std_dev": S_ur_gradient_std, "min": 0}
+
+    S_u_gradient_dist, S_ur_gradient_dist = psi.get_S_u_gradient_dists(
+        S_u_gradient, S_ur_gradient, corr, n
+    )
+
+    # check array sizes
+    assert S_u_gradient_dist.size == S_ur_gradient_dist.size == n
+
+    # check all values are greater than minimum
+    assert np.min(S_u_gradient_dist) >= S_u_gradient["min"]
+    assert np.min(S_ur_gradient_dist) >= S_ur_gradient["min"]
